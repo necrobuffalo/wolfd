@@ -1,0 +1,2 @@
+# wolfd
+Jabber forwarding daemon
