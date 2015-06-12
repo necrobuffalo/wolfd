@@ -35,12 +35,13 @@ class EchoBot(sleekxmpp.ClientXMPP):
         sleekxmpp.ClientXMPP.__init__(self, jid, password)
         # The session_start event will be triggered when the bot establishes
         # its connection with the server and the XML streams are ready for use.
-        # We want to listen for this event so that we we can 
+        # We want to listen for this event so that we we can
         # initialize our roster.
         self.add_event_handler("session_start", self.start)
         # The message event is triggered whenever a message stanza is received.
         # Be aware that that includes MUC messages and error messages.
         self.add_event_handler("message", self.message)
+
     def start(self, event):
         """
         Process the session_start event.
@@ -54,6 +55,7 @@ class EchoBot(sleekxmpp.ClientXMPP):
         """
         self.send_presence()
         self.get_roster()
+
     def message(self, msg):
         """
         Process incoming message stanzas. Be aware that this also
@@ -70,7 +72,8 @@ class EchoBot(sleekxmpp.ClientXMPP):
             # TODO Pull this into a separate file
             url = "FIXME"
             payload = {"text": msg['body']}
-            r = requests.post(url, data=json.dumps(payload))
+            requests.post(url, data=json.dumps(payload))
+
 
 def main():
     # Setup the command line arguments.
@@ -101,13 +104,13 @@ def main():
     # Setup the EchoBot and register plugins. Note that while plugins may have
     # interdependencies, the order in which you register them does not matter.
     xmpp = EchoBot(opts.jid, opts.password)
-    xmpp.register_plugin('xep_0030') # Service Discovery
-    xmpp.register_plugin('xep_0004') # Data Forms
-    xmpp.register_plugin('xep_0060') # PubSub
-    xmpp.register_plugin('xep_0199') # XMPP Ping
+    xmpp.register_plugin('xep_0030')  # Service Discovery
+    xmpp.register_plugin('xep_0004')  # Data Forms
+    xmpp.register_plugin('xep_0060')  # PubSub
+    xmpp.register_plugin('xep_0199')  # XMPP Ping
     # If you are working with an OpenFire server, you may need to adjust the
     # SSL version used: xmpp.ssl_version = ssl.PROTOCOL_SSLv3 If you want to
-    # verify the SSL certificates offered by a server: 
+    # verify the SSL certificates offered by a server:
     # xmpp.ca_certs = "path/to/ca/cert"
 
     # Connect to the XMPP server and start processing XMPP stanzas.
@@ -119,4 +122,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
