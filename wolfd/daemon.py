@@ -66,7 +66,7 @@ class EchoBot(sleekxmpp.ClientXMPP):
             payload = {"text": msg['body']}
             r = requests.post(url, data=json.dumps(payload))
 
-if __name__ == '__main__':
+def main():
     # Setup the command line arguments.
     optp = OptionParser()
     # Output verbosity options.
@@ -110,3 +110,7 @@ if __name__ == '__main__':
         print("Done")
     else:
         print("Unable to connect.")
+
+if __name__ == '__main__':
+    main()
+
