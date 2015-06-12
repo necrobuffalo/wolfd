@@ -16,12 +16,15 @@ import sleekxmpp
 import json
 import requests
 
-# Python versions before 3.0 do not use UTF-8 encoding by default. To ensure that Unicode is handled properly throughout SleekXMPP, we will set the default encoding ourselves to UTF-8.
+# Python versions before 3.0 do not use UTF-8 encoding by default. To ensure
+# that Unicode is handled properly throughout SleekXMPP, we will set the
+# default encoding ourselves to UTF-8.
 if sys.version_info < (3, 0):
     reload(sys)
     sys.setdefaultencoding('utf8')
 else:
     raw_input = input
+
 
 class EchoBot(sleekxmpp.ClientXMPP):
     """
@@ -30,10 +33,13 @@ class EchoBot(sleekxmpp.ClientXMPP):
     """
     def __init__(self, jid, password):
         sleekxmpp.ClientXMPP.__init__(self, jid, password)
-        # The session_start event will be triggered when the bot establishes its connection with the server and the XML streams are ready for use. We want to listen for this event so that we we can 
+        # The session_start event will be triggered when the bot establishes
+        # its connection with the server and the XML streams are ready for use.
+        # We want to listen for this event so that we we can 
         # initialize our roster.
         self.add_event_handler("session_start", self.start)
-        # The message event is triggered whenever a message stanza is received. Be aware that that includes MUC messages and error messages.
+        # The message event is triggered whenever a message stanza is received.
+        # Be aware that that includes MUC messages and error messages.
         self.add_event_handler("message", self.message)
     def start(self, event):
         """
@@ -92,20 +98,20 @@ def main():
         opts.jid = raw_input("Username: ")
     if opts.password is None:
         opts.password = getpass.getpass("Password: ")
-    # Setup the EchoBot and register plugins. Note that while plugins may have interdependencies, the order in which you register them does not matter.
+    # Setup the EchoBot and register plugins. Note that while plugins may have
+    # interdependencies, the order in which you register them does not matter.
     xmpp = EchoBot(opts.jid, opts.password)
     xmpp.register_plugin('xep_0030') # Service Discovery
     xmpp.register_plugin('xep_0004') # Data Forms
     xmpp.register_plugin('xep_0060') # PubSub
     xmpp.register_plugin('xep_0199') # XMPP Ping
-    # If you are working with an OpenFire server, you may need to adjust the SSL version used: xmpp.ssl_version = ssl.PROTOCOL_SSLv3 If you want to verify the SSL certificates offered by a server: 
-    # xmpp.ca_certs = "path/to/ca/cert" Connect to the XMPP server and start processing XMPP stanzas.
+    # If you are working with an OpenFire server, you may need to adjust the
+    # SSL version used: xmpp.ssl_version = ssl.PROTOCOL_SSLv3 If you want to
+    # verify the SSL certificates offered by a server: 
+    # xmpp.ca_certs = "path/to/ca/cert"
+
+    # Connect to the XMPP server and start processing XMPP stanzas.
     if xmpp.connect():
-        # If you do not have the dnspython library installed, you will need to manually specify the name of the server if it does not match the one in the JID. For example, to use Google Talk you would 
-        # need to use:
-        #
-        # if xmpp.connect(('talk.google.com', 5222)):
-        #     ...
         xmpp.process(block=True)
         print("Done")
     else:
