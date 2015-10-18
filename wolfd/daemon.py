@@ -1,20 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-    SleekXMPP: The Sleek XMPP Library
-    Copyright (C) 2010 Nathanael C. Fritz
-    This file is part of SleekXMPP.
-    See the file LICENSE for copying permission.
-"""
 
 import sys
+import os
 import logging
-import getpass
 from optparse import OptionParser
-import sleekxmpp
-
 import json
+
+import sleekxmpp
 import requests
+import yaml
 
 # Python versions before 3.0 do not use UTF-8 encoding by default. To ensure
 # that Unicode is handled properly throughout SleekXMPP, we will set the
@@ -25,6 +20,16 @@ if sys.version_info < (3, 0):
 else:
     raw_input = input
 
+# YAML config
+config_path = '~/.wolfd.yaml'
+config_path = os.path.expanduser(config_path)
+
+with open(config_path) as f:
+    config = yaml.load(f.read())
+
+jid = config['jid']
+password = config['password']
+slack = config['slack']
 
 class EchoBot(sleekxmpp.ClientXMPP):
     """
@@ -69,13 +74,13 @@ class EchoBot(sleekxmpp.ClientXMPP):
         """
         if msg['type'] in ('chat', 'normal'):
             # output to slack
-            # TODO Pull this into a separate file
-            url = "FIXME"
-            payload = {"text": msg['body']}
-            requests.post(url, data=json.dumps(payload))
+            for url in slack:
+                payload = {"text": msg['body']}
+                requests.post(url, data=json.dumps(payload))
 
 
 def main():
+
     # Setup the command line arguments.
     optp = OptionParser()
     # Output verbosity options.
@@ -88,22 +93,19 @@ def main():
     optp.add_option('-v', '--verbose', help='set logging to COMM',
                     action='store_const', dest='loglevel',
                     const=5, default=logging.INFO)
-    # JID and password options.
-    optp.add_option("-j", "--jid", dest="jid",
-                    help="JID to use")
-    optp.add_option("-p", "--password", dest="password",
-                    help="password to use")
     opts, args = optp.parse_args()
     # Setup logging.
     logging.basicConfig(level=opts.loglevel,
                         format='%(levelname)-8s %(message)s')
-    if opts.jid is None:
-        opts.jid = raw_input("Username: ")
-    if opts.password is None:
-        opts.password = getpass.getpass("Password: ")
+    if jid is None:
+        print "Please provide a jid in your .wolfd.yaml file."
+        exit(1)
+    if password is None:
+        print "Please provide a password in your .wolfd.yaml file."
+        exit(1)
     # Setup the EchoBot and register plugins. Note that while plugins may have
     # interdependencies, the order in which you register them does not matter.
-    xmpp = EchoBot(opts.jid, opts.password)
+    xmpp = EchoBot(jid, password)
     xmpp.register_plugin('xep_0030')  # Service Discovery
     xmpp.register_plugin('xep_0004')  # Data Forms
     xmpp.register_plugin('xep_0060')  # PubSub
