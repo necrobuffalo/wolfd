@@ -31,6 +31,7 @@ jid = config['jid']
 password = config['password']
 slack = config['slack']
 
+
 class EchoBot(sleekxmpp.ClientXMPP):
     """
     A simple SleekXMPP bot that will echo messages it
