@@ -11,7 +11,7 @@ Create a virtualenv
 virtualenv venv
 . venv/bin/activate
 pip install -r requirements.txt
-python setup.py
+python setup.py install
 ```
 
 ## Configuration
